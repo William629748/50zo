@@ -47,3 +47,71 @@
     -fx-translate-y: 1px; /* A slight downward shift to simulate a click */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0); /* More pronounced shadow */
 }
+
+.poker-chip-button2 {
+    -fx-background-image: url('images/RulesButton.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-min-height: 150px;
+    -fx-max-height: 150px;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+}
+
+.poker-chip-button2:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.4), 10, 0.5, 0, 0);
+}
+
+.poker-chip-button2:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0);
+}
+
+.poker-chip-button3 {
+    -fx-background-image: url('images/ExitButton.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-min-height: 150px;
+    -fx-max-height: 150px;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+}
+
+.poker-chip-button3:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.4), 10, 0.5, 0, 0);
+}
+
+.poker-chip-button3:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0);
+}
+
+.TextField {
+    -fx-background-image: url("Images/TextField.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+    -fx-background-repeat: no-repeat;
+    -fx-text-fill: #FFD700; /* texto escrito */
+    -fx-prompt-text-fill: #FFD700; /* color del placeholder */
+    -fx-font-size: 14px;
+}
+
+/* cuando el TextField está enfocado, ocultar el prompt */
+.TextField:focused {
+    -fx-prompt-text-fill: transparent;
+}
