@@ -1,4 +1,4 @@
-package model;
+package com.cincuentazo.model;
 
 /**
  * Represents a playing card with a rank and suit.

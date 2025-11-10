@@ -1,4 +1,4 @@
-package exception;
+package com.cincuentazo.exception;
 
 /**
  * Custom unchecked exception for invalid card operations.

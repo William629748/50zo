@@ -1,4 +1,4 @@
-package exception;
+package com.cincuentazo.exception;
 
 /**
  * Custom checked exception thrown when attempting to draw from an empty deck.

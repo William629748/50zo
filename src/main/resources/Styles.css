@@ -1,10 +1,10 @@
 .MainMenu {
-    -fx-background-image: url("images/MainMenu.jpg");
+    -fx-background-image: url("com.cincuentazo.images/MainMenu.jpg");
     -fx-background-size: 100% 100%;
 }
 .poker-chip-button {
     /* Background image */
-    -fx-background-image: url('images/playButton.png'); /* Ensure the path is correct for your PNG */
+    -fx-background-image: url('com.cincuentazo.images/playButton.png'); /* Ensure the path is correct for your PNG */
     -fx-background-size: cover; /* or 'contain', or 100% 100%, depending on how you want the image to fit */
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;

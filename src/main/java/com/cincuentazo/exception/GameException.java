@@ -1,4 +1,4 @@
-package exception;
+package com.cincuentazo.exception;
 
 /**
  * Custom checked exception for general game-related errors.
