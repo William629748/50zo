@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle; // <-- AÑADE ESTE IMPORT
 import java.io.IOException;
 
 /**
@@ -28,6 +29,12 @@ public class WelcomeStage {
     public WelcomeStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.welcomeStage = new Stage();
+
+        // ==================== LÍNEA AÑADIDA ====================
+        // Esta línea quita toda la decoración de la ventana
+        this.welcomeStage.initStyle(StageStyle.UNDECORATED);
+        // ========================================================
+
         setupUI();
     }
 
@@ -38,7 +45,7 @@ public class WelcomeStage {
         try {
             // Load FXML
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/cincuentazo/view/WelcomeViewWelcomeView.fxml")
+                    getClass().getResource("/WelcomeView.fxml")
             );
 
             Parent root = loader.load();
@@ -47,15 +54,15 @@ public class WelcomeStage {
             // Pass stage reference to controller
             controller.setStage(welcomeStage);
 
-            // Create scene
-            Scene scene = new Scene(root, 800, 600);
+            // Create scene (usa el tamaño del FXML)
+            Scene scene = new Scene(root);
 
             // Add keyboard event handler
             scene.setOnKeyPressed(controller::handleKeyPressed);
 
             // Configure stage
             welcomeStage.setScene(scene);
-            welcomeStage.setTitle("Cincuentazo - Welcome");
+            // welcomeStage.setTitle("Cincuentazo - Welcome"); // <-- Esta línea ya no es necesaria
             welcomeStage.setResizable(false);
 
             // Handle close request
@@ -80,7 +87,7 @@ public class WelcomeStage {
         root.setStyle("-fx-background-color: #2c3e50; -fx-padding: 40;");
 
         javafx.scene.control.Label errorLabel = new javafx.scene.control.Label(
-                "Error loading main menu interface.\nPlease check that WelcomeView.fxml exists in:\nsrc/main/resources/com/cincuentazo/view/"
+                "Error loading main menu interface.\nPlease check that WelcomeView.fxml exists in:\nsrc/main/resources/"
         );
         errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #e74c3c; -fx-text-alignment: center;");
 
@@ -90,9 +97,9 @@ public class WelcomeStage {
 
         root.getChildren().addAll(errorLabel, exitButton);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root); // Usa el tamaño preferido
         welcomeStage.setScene(scene);
-        welcomeStage.setTitle("Error - Cincuentazo");
+        // welcomeStage.setTitle("Error - Cincuentazo"); // <-- Esta línea ya no es necesaria
     }
 
     /**

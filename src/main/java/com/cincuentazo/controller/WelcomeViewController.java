@@ -1,11 +1,13 @@
 package com.cincuentazo.controller;
 
 import com.cincuentazo.view.GameStage;
+import javafx.animation.PauseTransition; // <-- IMPORTA ESTO
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration; // <-- IMPORTA ESTO
 
 /**
  * Controller for the main menu (welcome screen).
@@ -24,7 +26,6 @@ public class WelcomeViewController {
     @FXML private Button startButton;
     @FXML private Button rulesButton;
     @FXML private Button exitButton;
-    @FXML private Label statusLabel;
 
     private Stage stage;
 
@@ -35,7 +36,6 @@ public class WelcomeViewController {
     @FXML
     public void initialize() {
         setupRadioButtons();
-        setupButtonHoverEffects();
     }
 
     /**
@@ -54,58 +54,6 @@ public class WelcomeViewController {
         radio1Player.setUserData(1);
         radio2Players.setUserData(2);
         radio3Players.setUserData(3);
-
-        // Add hover effects for radio buttons
-        addRadioHoverEffect(radio1Player);
-        addRadioHoverEffect(radio2Players);
-        addRadioHoverEffect(radio3Players);
-    }
-
-    /**
-     * Adds hover effect to a radio button.
-     *
-     * @param radio the radio button
-     */
-    private void addRadioHoverEffect(RadioButton radio) {
-        radio.setOnMouseEntered(e -> {
-            if (!radio.isSelected()) {
-                radio.setStyle("-fx-text-fill: #3498db;");
-            }
-        });
-
-        radio.setOnMouseExited(e -> {
-            if (!radio.isSelected()) {
-                radio.setStyle("-fx-text-fill: #ecf0f1;");
-            }
-        });
-    }
-
-    /**
-     * Sets up hover effects for buttons.
-     */
-    private void setupButtonHoverEffects() {
-        addButtonHoverEffect(startButton, "#27ae60", "#2ecc71");
-        addButtonHoverEffect(rulesButton, "#3498db", "#5dade2");
-        addButtonHoverEffect(exitButton, "#e74c3c", "#ec7063");
-    }
-
-    /**
-     * Adds hover effect to a button.
-     *
-     * @param button the button
-     * @param normalColor the normal background color
-     * @param hoverColor the hover background color
-     */
-    private void addButtonHoverEffect(Button button, String normalColor, String hoverColor) {
-        String baseStyle = "-fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;";
-
-        button.setOnMouseEntered(e ->
-                button.setStyle(baseStyle + " -fx-background-color: " + hoverColor + ";")
-        );
-
-        button.setOnMouseExited(e ->
-                button.setStyle(baseStyle + " -fx-background-color: " + normalColor + ";")
-        );
     }
 
     /**
@@ -116,18 +64,46 @@ public class WelcomeViewController {
     private void handleStartGame() {
         RadioButton selected = (RadioButton) playerCountGroup.getSelectedToggle();
         if (selected == null) {
-            statusLabel.setText("Please select number of opponents!");
-            statusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
+            // Si no se seleccionó nada, llama al método de "titilar"
+            flashRadioButtons();
             return;
         }
 
         int numMachines = (int) selected.getUserData();
-        statusLabel.setText("Starting game with " + numMachines + " opponent(s)...");
-        statusLabel.setStyle("-fx-text-fill: #2ecc71; -fx-font-style: italic;");
+        System.out.println("Starting game with " + numMachines + " opponent(s)...");
 
         // Start the game
         startGame(numMachines);
     }
+
+    /**
+     * MÉTODO NUEVO: Hace que los RadioButtons titilen en rojo.
+     */
+    private void flashRadioButtons() {
+        // Define el estilo de "error" (puedes cambiar #e74c3c por "red")
+        String errorStyle = "-fx-text-fill: #e74c3c;";
+
+        // 1. Aplica el estilo de error a los tres botones
+        radio1Player.setStyle(errorStyle);
+        radio2Players.setStyle(errorStyle);
+        radio3Players.setStyle(errorStyle);
+
+        // 2. Crea una pausa de 1 segundo
+        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+
+        // 3. Define lo que pasa cuando la pausa termina
+        pause.setOnFinished(event -> {
+            // Revierte el estilo a 'null'. Esto hace que
+            // los botones vuelvan a usar el estilo de tu archivo CSS.
+            radio1Player.setStyle(null);
+            radio2Players.setStyle(null);
+            radio3Players.setStyle(null);
+        });
+
+        // 4. Inicia la animación de pausa
+        pause.play();
+    }
+
 
     /**
      * Starts the game with specified number of machine players.
@@ -137,7 +113,7 @@ public class WelcomeViewController {
     private void startGame(int numMachines) {
         try {
             Stage gameStage = new Stage();
-            GameStage game = new GameStage(gameStage, numMachines);
+            GameStage game = new GameStage();
             game.show();
 
             // Close the welcome screen

@@ -49,7 +49,7 @@
 }
 
 .poker-chip-button2 {
-    -fx-background-image: url('images/RulesButton.png');
+    -fx-background-image: url('com.cincuentazo.images/RulesButton.png');
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -75,7 +75,7 @@
 }
 
 .poker-chip-button3 {
-    -fx-background-image: url('images/ExitButton.png');
+    -fx-background-image: url('com.cincuentazo.images/ExitButton.png');
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -101,7 +101,7 @@
 }
 
 .TextField {
-    -fx-background-image: url("Images/TextField.png");
+    -fx-background-image: url("com.cincuentazo.images/TextField.png");
     -fx-background-size: 100% 100%;
     -fx-background-color: transparent;
     -fx-background-radius: 0px;
@@ -114,4 +114,61 @@
 /* cuando el TextField está enfocado, ocultar el prompt */
 .TextField:focused {
     -fx-prompt-text-fill: transparent;
+}
+
+.GameBackground {
+    -fx-background-image: url("com.cincuentazo.images/GameBackground.jpg");
+    -fx-background-size: 100% 100%;
+}
+
+.HelpButton {
+    -fx-background-image: url('com.cincuentazo.images/HelpButton.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-min-width: 100px;
+    -fx-max-width: 100px;
+    -fx-min-height: 100px;
+    -fx-max-height: 100px;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+}
+
+.HelpButton:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.4), 10, 0.5, 0, 0);
+}
+
+.HelpButton:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0);
+}
+
+.GoBackButton {
+    -fx-background-image: url('com.cincuentazo.images/GoBackButton.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-min-width: 100px;
+    -fx-max-width: 100px;
+    -fx-min-height: 100px;
+    -fx-max-height: 100px;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+}
+
+.GoBackButton:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.4), 10, 0.5, 0, 0);
+}
+
+.GoBackButton:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0);
 }
