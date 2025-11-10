@@ -1,0 +1,49 @@
+.MainMenu {
+    -fx-background-image: url("images/MainMenu.jpg");
+    -fx-background-size: 100% 100%;
+}
+.poker-chip-button {
+    /* Background image */
+    -fx-background-image: url('images/playButton.png'); /* Ensure the path is correct for your PNG */
+    -fx-background-size: cover; /* or 'contain', or 100% 100%, depending on how you want the image to fit */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+    /* Remove default button background and border */
+    -fx-background-color: transparent; /* Makes the button's background transparent */
+    -fx-border-color: transparent; /* Removes the default border */
+    -fx-border-width: 0;
+
+    /* Adjust button size to match your PNG image */
+    /* These values are examples; adjust based on the actual dimensions of your PNG */
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-min-height: 150px;
+    -fx-max-height: 150px;
+
+    /* Remove default padding (if the image already includes the 'fill') */
+    -fx-padding: 0;
+
+    /* Text styling (if button text is to be displayed, though the image already has "JUGAR") */
+    -fx-text-fill: transparent; /* Make the text transparent since the image contains it */
+    /* If the image did NOT have text and you wanted to display button text on it, use: */
+    /* -fx-text-fill: #FFFFFF; */
+    /* -fx-font-size: 20px; */
+    /* -fx-font-weight: bold; */
+
+    /* Hover effect (optional) */
+    -fx-cursor: hand; /* Changes the cursor to a hand pointer */
+}
+
+/* Effect when hovering over the button */
+.poker-chip-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.4), 10, 0.5, 0, 0); /* A subtle golden glow */
+    /* Alternatively, you could use a different image for the hover state if you have a "lit-up" version */
+    /* -fx-background-image: url('images/play_button_hover.png'); */
+}
+
+/* Effect when the button is pressed */
+.poker-chip-button:pressed {
+    -fx-translate-y: 1px; /* A slight downward shift to simulate a click */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0.5, 0, 0); /* More pronounced shadow */
+}
