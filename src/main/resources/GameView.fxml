@@ -17,7 +17,7 @@
       <HBox layoutX="304.0" layoutY="297.0" prefHeight="100.0" prefWidth="200.0" />
       <VBox layoutX="597.0" layoutY="247.0" prefHeight="200.0" prefWidth="100.0" />
       <VBox layoutX="149.0" layoutY="247.0" prefHeight="200.0" prefWidth="100.0" />
-      <Button layoutX="392.0" layoutY="498.0" mnemonicParsing="false" text="Button" />
+      <Button fx:id="endTurnButton" layoutX="392.0" layoutY="498.0" mnemonicParsing="false" text="Button" />
       <Label layoutX="517.0" layoutY="210.0" text="Label" />
       <VBox layoutX="213.0" layoutY="423.0" prefHeight="200.0" prefWidth="100.0" />
    </children>

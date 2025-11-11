@@ -469,7 +469,8 @@ public class GameController implements CardSelectionListener, GameEventListener,
 
             onTurnEnd(currentPlayer);
 
-        } catch (EmptyDeckException | GameException e) {
+        } catch (GameException e) {
+            // GameException captura también EmptyDeckException (que es subclase)
             showError(e.getMessage());
         }
     }
@@ -536,3 +537,4 @@ public class GameController implements CardSelectionListener, GameEventListener,
     public KeyboardAdapter getKeyboardAdapter() {
         return new KeyboardAdapter();
     }
+}
