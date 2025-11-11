@@ -3,8 +3,9 @@ package com.cincuentazo.exception;
 /**
  * Custom unchecked exception for invalid card operations.
  * This is an unmarked (unchecked) exception that extends RuntimeException.
+ * Used when a card operation violates game rules or logic.
  *
- * @author William May, Miguel Martinez
+ * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class InvalidCardException extends RuntimeException {

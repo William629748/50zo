@@ -7,13 +7,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.geometry.Pos;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * Controller for the main game view.
@@ -35,10 +33,6 @@ public class GameController implements CardSelectionListener, GameEventListener,
     @FXML private VBox machine3Box;
     @FXML private Label statusLabel;
     @FXML private Button endTurnButton;
-    @FXML private Button rulesButton;
-    @FXML private Button exitButton;
-
-
 
     private GameModel gameModel;
     private boolean cardPlayed;
@@ -142,6 +136,16 @@ public class GameController implements CardSelectionListener, GameEventListener,
      *
      * @param numMachines number of machine players
      */
+    public void startGame(int numMachines) {
+        try {
+            gameModel.initializeGame(numMachines);
+            setupMachineBoxes(numMachines);
+            onUIUpdateRequired();
+            onStatusMessage("Game started! Your turn.");
+        } catch (GameException e) {
+            showError("Failed to start game: " + e.getMessage());
+        }
+    }
 
     /**
      * Sets up the visibility of machine player boxes.
@@ -166,6 +170,16 @@ public class GameController implements CardSelectionListener, GameEventListener,
         if (!gameModel.getCurrentPlayer().isHuman()) {
             onStatusMessage("Wait for your turn!");
             return;
+        }
+
+        try {
+            gameModel.playCard(card);
+            cardPlayed = true;
+            onUIUpdateRequired();
+            onStatusMessage("Card played! Click 'End Turn' to continue.");
+            endTurnButton.setDisable(false);
+        } catch (InvalidCardException | GameException e) {
+            showError(e.getMessage());
         }
     }
 
@@ -254,26 +268,14 @@ public class GameController implements CardSelectionListener, GameEventListener,
      * Updates all player hands display.
      */
     private void updatePlayerHands() {
-        // <-- CAMBIO AQUÍ: Toda esta sección fue reemplazada para Corregir Errores 3 y 4.
-        // La lógica anterior usaba variables de ejemplo que no existían.
-        // Esta nueva lógica obtiene los jugadores reales del 'gameModel'.
+        // Obtener la lista de jugadores (ahora retorna LinkedList<Player>)
+        List<Player> players = gameModel.getPlayers();
 
-        // Asumiendo que 'gameModel.getPlayers()' existe y devuelve List<Player>
-        // Primero, obtenemos la lista de objetos genéricos que devuelve tu modelo
-        List<Object> objectList = gameModel.getPlayers(); // Esta es la llamada real
-
-// Segundo, la convertimos a una List<Player>
-        List<Player> players = objectList.stream()
-                .map(obj -> (Player) obj)
-                .collect(Collectors.toList());
-
-// El resto del código sigue igual
         if (players == null || players.isEmpty()) {
-            return; // No hay nada que actualizar
+            return;
         }
-// ...
 
-        // Busca al jugador humano para actualizar su mano
+        // Buscar al jugador humano
         Player humanPlayer = null;
         for (Player p : players) {
             if (p.isHuman()) {
@@ -281,21 +283,20 @@ public class GameController implements CardSelectionListener, GameEventListener,
                 break;
             }
         }
+
+        // Actualizar la mano del jugador humano
         if (humanPlayer != null) {
             updateHumanHand(humanPlayer);
         }
 
-        // Actualiza las manos de los jugadores máquina
+        // Actualizar las manos de los jugadores máquina
         int machineIndex = 1;
         for (Player player : players) {
-            if (!player.isHuman()) {
-                // Se asegura de no pasar de 3 máquinas
-                if (machineIndex <= 3) {
-                    updateMachineHand(player, machineIndex++);
-                }
+            if (!player.isHuman() && machineIndex <= 3) {
+                updateMachineHand(player, machineIndex);
+                machineIndex++;
             }
         }
-        // --- FIN DEL CAMBIO ---
     }
 
     /**
@@ -454,20 +455,23 @@ public class GameController implements CardSelectionListener, GameEventListener,
      */
     @FXML
     private void handleEndTurn() {
-        // Simplemente dejamos el código sin el try-catch
+        try {
+            Player currentPlayer = gameModel.getCurrentPlayer();
 
-        Player currentPlayer = gameModel.getCurrentPlayer();
+            if (!cardPlayed && currentPlayer.isHuman()) {
+                onStatusMessage("You must play a card first!");
+                return;
+            }
 
-        if (!cardPlayed && currentPlayer.isHuman()) {
-            onStatusMessage("You must play a card first!");
-            return;
+            if (cardPlayed) {
+                gameModel.drawCard();
+            }
+
+            onTurnEnd(currentPlayer);
+
+        } catch (EmptyDeckException | GameException e) {
+            showError(e.getMessage());
         }
-
-        if (cardPlayed) {
-            gameModel.drawCard();
-        }
-
-        onTurnEnd(currentPlayer);
     }
 
     /**
@@ -523,71 +527,6 @@ public class GameController implements CardSelectionListener, GameEventListener,
         );
         alert.showAndWait();
     }
-    @FXML
-    private void handleShowRules() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Rules");
-        alert.setHeaderText("How to Play Cincuentazo");
-
-        String rules = """
-            OBJECTIVE:
-            Be the last player remaining in the game.
-            
-            BASIC RULES:
-            • The table sum must never exceed 50
-            • Each player has 4 cards in their hand
-            • On your turn, play a card and draw a new one
-            • If you cannot play any card without exceeding 50, you are eliminated
-            
-            CARD VALUES:
-            • Cards 2-8 and 10: Add their number value to the sum
-            • Card 9: Neutral card (adds 0 to the sum)
-            • J, Q, K: Subtract 10 from the sum
-            • A (Ace): Adds 1 or 10 (automatically chooses the best option)
-            
-            GAME FLOW:
-            1. Each player starts with 4 cards
-            2. One card is placed on the table to start the sum
-            3. Players take turns playing cards
-            4. After playing, draw a new card from the deck
-            5. When the deck is empty, the discard pile is reshuffled
-            6. Eliminated players' cards return to the deck
-            7. Last player standing wins!
-            
-            KEYBOARD SHORTCUTS:
-            • Number Keys (1/2/3): Quick select opponents
-            • Enter: Start game
-            • Esc: Exit game
-            • Space (in-game): End turn quickly
-            • H (in-game): Show help
-            
-            TIPS:
-            • Plan ahead - think about what cards to save
-            • Use J, Q, K strategically to lower the sum
-            • Watch the current sum carefully
-            • Remember: Ace is flexible (1 or 10)
-            
-            Good luck and have fun! 🎴
-            """;
-
-        alert.setContentText(rules);
-        alert.getDialogPane().setPrefWidth(600);
-        alert.getDialogPane().setPrefHeight(500);
-        alert.showAndWait();
-    }
-    @FXML
-    private void handleExit() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit Game");
-        alert.setHeaderText("Are you sure you want to exit?");
-        alert.setContentText("The application will close.");
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                System.exit(0);
-            }
-        });
-    }
 
     /**
      * Gets the keyboard adapter for external setup.
@@ -597,4 +536,3 @@ public class GameController implements CardSelectionListener, GameEventListener,
     public KeyboardAdapter getKeyboardAdapter() {
         return new KeyboardAdapter();
     }
-}

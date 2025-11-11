@@ -4,7 +4,7 @@ package com.cincuentazo.exception;
  * Custom checked exception for general game-related errors.
  * This is a marked (checked) exception that must be caught or declared.
  *
- * @author William May, Miguel Martinez
+ * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class GameException extends Exception {
