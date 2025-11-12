@@ -1,17 +1,15 @@
 package com.cincuentazo.controller;
 
 import com.cincuentazo.view.GameStage;
-import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * Controller for the main menu (welcome screen).
- * Handles player selection, username validation and game initialization.
+ * Handles player selection and game initialization.
  * Implements usability heuristics and event handling.
  *
  * @author Cincuentazo Team
@@ -26,18 +24,19 @@ public class WelcomeViewController {
     @FXML private Button startButton;
     @FXML private Button rulesButton;
     @FXML private Button exitButton;
-
-    // NUEVO: Vinculamos el campo de texto
-    @FXML private TextField usernameField;
+    @FXML private Label statusLabel;
+    @FXML private TextField usernameField; // NEW: Campo para el nombre del usuario
 
     private Stage stage;
 
     /**
      * Initializes the controller.
+     * Sets up event handlers and default selections.
      */
     @FXML
     public void initialize() {
         setupRadioButtons();
+        setupButtonHoverEffects();
     }
 
     /**
@@ -56,91 +55,98 @@ public class WelcomeViewController {
         radio1Player.setUserData(1);
         radio2Players.setUserData(2);
         radio3Players.setUserData(3);
+
+        // Add hover effects for radio buttons
+        addRadioHoverEffect(radio1Player);
+        addRadioHoverEffect(radio2Players);
+        addRadioHoverEffect(radio3Players);
+    }
+
+    /**
+     * Adds hover effect to a radio button.
+     *
+     * @param radio the radio button
+     */
+    private void addRadioHoverEffect(RadioButton radio) {
+        radio.setOnMouseEntered(e -> {
+            if (!radio.isSelected()) {
+                radio.setStyle("-fx-text-fill: #3498db;");
+            }
+        });
+
+        radio.setOnMouseExited(e -> {
+            if (!radio.isSelected()) {
+                radio.setStyle("-fx-text-fill: #ecf0f1;");
+            }
+        });
+    }
+
+    /**
+     * Sets up hover effects for buttons.
+     */
+    private void setupButtonHoverEffects() {
+        addButtonHoverEffect(startButton, "#27ae60", "#2ecc71");
+        addButtonHoverEffect(rulesButton, "#3498db", "#5dade2");
+        addButtonHoverEffect(exitButton, "#e74c3c", "#ec7063");
+    }
+
+    /**
+     * Adds hover effect to a button.
+     *
+     * @param button the button
+     * @param normalColor the normal background color
+     * @param hoverColor the hover background color
+     */
+    private void addButtonHoverEffect(Button button, String normalColor, String hoverColor) {
+        String baseStyle = "-fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;";
+
+        button.setOnMouseEntered(e ->
+                button.setStyle(baseStyle + " -fx-background-color: " + hoverColor + ";")
+        );
+
+        button.setOnMouseExited(e ->
+                button.setStyle(baseStyle + " -fx-background-color: " + normalColor + ";")
+        );
     }
 
     /**
      * Handles the start game button action.
-     * Validates inputs and starts the game.
+     * Gets selected player count and starts the game.
      */
     @FXML
     private void handleStartGame() {
-        boolean hasError = false;
-
-        // 1. Validar selección de jugadores
         RadioButton selected = (RadioButton) playerCountGroup.getSelectedToggle();
         if (selected == null) {
-            flashRadioButtons();
-            hasError = true;
-        }
-
-        // 2. Validar nombre de usuario (NUEVO)
-        String username = usernameField.getText();
-        if (username == null || username.trim().isEmpty()) {
-            flashUsernameField();
-            hasError = true;
-        }
-
-        // Si hubo algún error, detenemos aquí
-        if (hasError) {
+            statusLabel.setText("Please select number of opponents!");
+            statusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
             return;
         }
 
-        // Si todo está bien, procedemos
+        // Validar que el usuario haya ingresado un nombre
+        String username = usernameField.getText().trim();
+        if (username.isEmpty()) {
+            statusLabel.setText("Please enter your username!");
+            statusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
+            return;
+        }
+
         int numMachines = (int) selected.getUserData();
-        System.out.println("Starting game for user '" + username + "' with " + numMachines + " opponent(s)...");
+        statusLabel.setText("Starting game with " + numMachines + " opponent(s)...");
+        statusLabel.setStyle("-fx-text-fill: #2ecc71; -fx-font-style: italic;");
 
         // Start the game
         startGame(numMachines, username);
     }
 
     /**
-     * Makes the RadioButtons flash red.
-     */
-    private void flashRadioButtons() {
-        String errorStyle = "-fx-text-fill: #e74c3c;"; // Rojo
-
-        radio1Player.setStyle(errorStyle);
-        radio2Players.setStyle(errorStyle);
-        radio3Players.setStyle(errorStyle);
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        pause.setOnFinished(event -> {
-            radio1Player.setStyle(null);
-            radio2Players.setStyle(null);
-            radio3Players.setStyle(null);
-        });
-        pause.play();
-    }
-
-    /**
-     * NUEVO: Makes the TextField flash red border.
-     */
-    private void flashUsernameField() {
-        // Borde rojo fuerte
-        String errorStyle = "-fx-border-color: #e74c3c; -fx-border-width: 2px;";
-
-        usernameField.setStyle(errorStyle);
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        pause.setOnFinished(event -> {
-            // Volver al estilo original (definido en CSS)
-            usernameField.setStyle(null);
-        });
-        pause.play();
-    }
-
-    /**
-     * Starts the game with specified parameters.
+     * Starts the game with specified number of machine players.
      *
      * @param numMachines number of computer opponents
-     * @param username name of the human player
+     * @param username the human player's username
      */
     private void startGame(int numMachines, String username) {
         try {
-            // Aquí podrías pasarle el username al GameStage si quisieras en el futuro
-            Stage gameStage = new Stage();
-            // GameStage game = new GameStage(username); // Idea para el futuro
-            GameStage game = new GameStage();
+            GameStage game = new GameStage(stage, numMachines, username);
             game.show();
 
             // Close the welcome screen
@@ -155,6 +161,7 @@ public class WelcomeViewController {
 
     /**
      * Handles the show rules button action.
+     * Displays game rules in a dialog.
      */
     @FXML
     private void handleShowRules() {
@@ -211,6 +218,7 @@ public class WelcomeViewController {
 
     /**
      * Handles the exit button action.
+     * Closes the application with confirmation.
      */
     @FXML
     private void handleExit() {
@@ -228,6 +236,8 @@ public class WelcomeViewController {
 
     /**
      * Handles keyboard events for shortcuts.
+     *
+     * @param event the key event
      */
     @FXML
     public void handleKeyPressed(KeyEvent event) {
@@ -243,6 +253,11 @@ public class WelcomeViewController {
         }
     }
 
+    /**
+     * Shows an error dialog.
+     *
+     * @param message the error message
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

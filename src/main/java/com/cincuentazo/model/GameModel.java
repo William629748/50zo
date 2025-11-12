@@ -1,249 +1,318 @@
 package com.cincuentazo.model;
 
-import com.cincuentazo.exception.GameException;
-import com.cincuentazo.exception.InvalidCardException;
+import com.cincuentazo.exception.*;
 import com.cincuentazo.interfaces.GameEventListener;
 import com.cincuentazo.interfaces.UIUpdateListener;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
- * Represents the game model, handling game state, rules, and player interactions.
- * Implements the core logic of the "Cincuentazo" game.
+ * Main game model that manages the game state and logic.
+ * Uses LinkedList for managing players (queue behavior).
  *
  * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class GameModel {
 
+    private static final int MAX_TABLE_SUM = 50;
+    private static final int INITIAL_HAND_SIZE = 4;
+
+    private Deck deck;
     private LinkedList<Player> players;
-    private LinkedList<Card> deck;
-    private LinkedList<Card> discardPile;
+    private int currentPlayerIndex;
     private int tableSum;
     private Card tableCard;
-    private int currentPlayerIndex;
-    private boolean gameOver;
+    private boolean gameStarted;
+    private boolean gameEnded;
     private Player winner;
 
-    // Listeners para notificar al controlador
+    /**
+     * Constructs a new GameModel.
+     */
+    public GameModel() {
+        this.deck = new Deck();
+        this.players = new LinkedList<>();
+        this.currentPlayerIndex = 0;
+        this.tableSum = 0;
+        this.gameStarted = false;
+        this.gameEnded = false;
+    }
+
     private GameEventListener gameEventListener;
     private UIUpdateListener uiUpdateListener;
 
-    public GameModel() {
-        this.players = new LinkedList<>();
-        this.deck = new LinkedList<>();
-        this.discardPile = new LinkedList<>();
-        this.tableSum = 0;
-        this.currentPlayerIndex = 0;
-        this.gameOver = false;
-        this.winner = null;
-    }
-
-    // Setters para los listeners
-    public void setGameEventListener(GameEventListener gameEventListener) {
-        this.gameEventListener = gameEventListener;
-    }
-
-    public void setUiUpdateListener(UIUpdateListener uiUpdateListener) {
-        this.uiUpdateListener = uiUpdateListener;
+    /**
+     * Sets the game event listener.
+     *
+     * @param listener the listener to set
+     */
+    public void setGameEventListener(GameEventListener listener) {
+        this.gameEventListener = listener;
     }
 
     /**
-     * Initializes the game with the specified number of machine players and a human player.
+     * Sets the UI update listener.
      *
-     * @param numMachines the number of machine players (1-3)
-     * @param humanUsername the name for the human player
-     * @throws GameException if the number of machines is invalid or deck creation fails
+     * @param listener the listener to set
      */
-    public void initializeGame(int numMachines, String humanUsername) throws GameException {
-        if (numMachines < 1 || numMachines > 3) {
-            throw new GameException("Invalid number of machine players. Must be between 1 and 3.");
+    public void setUiUpdateListener(UIUpdateListener listener) {
+        this.uiUpdateListener = listener;
+    }
+
+    /**
+     * Initializes the game with the specified number of machine players.
+     *
+     * @param numMachinePlayers number of machine players (1-3)
+     * @param humanUsername the username for the human player
+     * @throws GameException if invalid number of players
+     */
+    public void initializeGame(int numMachinePlayers, String humanUsername) throws GameException {
+        if (numMachinePlayers < 1 || numMachinePlayers > 3) {
+            throw new GameException("Number of machine players must be between 1 and 3");
         }
 
         players.clear();
-        deck = createStandardDeck();
-        discardPile.clear();
-        tableSum = 0;
-        tableCard = null;
-        gameOver = false;
-        winner = null;
+        deck = new Deck();
 
-        // Crear al jugador humano
-        players.add(new HumanPlayer(humanUsername));
+        // Add human player with custom username
+        String playerName = (humanUsername != null && !humanUsername.trim().isEmpty())
+                ? humanUsername.trim()
+                : "You";
+        players.add(new Player(playerName, true));
 
-        // Crear a los jugadores máquina
-        for (int i = 0; i < numMachines; i++) {
-            players.add(new MachinePlayer("Machine " + (i + 1)));
+        // Add machine players
+        for (int i = 1; i <= numMachinePlayers; i++) {
+            players.add(new Player("Machine " + i, false));
         }
 
-        Collections.shuffle(players); // Aleatoriza el orden
         dealInitialCards();
+        setupTable();
 
-        currentPlayerIndex = 0; // El primer jugador empieza
-
-        // Poner la primera carta en la mesa del mazo
-        if (!deck.isEmpty()) {
-            tableCard = deck.removeFirst();
-            tableSum = tableCard.calculateValue(0); // Valor inicial
-            // Si sale un comodín o carta especial al inicio, se aplica su valor base
-        }
-
-        // Notificar UI
-        if (uiUpdateListener != null) {
-            uiUpdateListener.onUIUpdateRequired();
-        }
+        gameStarted = true;
+        gameEnded = false;
+        currentPlayerIndex = 0;
     }
 
     /**
-     * Creates a standard deck of cards using Enums.
+     * Deals initial cards to all players.
+     *
+     * @throws EmptyDeckException if deck doesn't have enough cards
      */
-    private LinkedList<Card> createStandardDeck() {
-        LinkedList<Card> newDeck = new LinkedList<>();
-
-        for (Card.Suit suit : Card.Suit.values()) {
-            for (Card.Rank rank : Card.Rank.values()) {
-                // CORRECCIÓN: Primero 'rank', luego 'suit'
-                newDeck.add(new Card(rank, suit));
-            }
-        }
-
-        Collections.shuffle(newDeck);
-        return newDeck;
-    }
-
-    /**
-     * Deals 4 cards to each player.
-     */
-    private void dealInitialCards() {
+    private void dealInitialCards() throws EmptyDeckException {
         for (Player player : players) {
-            player.getHand().clear();
-            for (int i = 0; i < 4; i++) {
-                if (!deck.isEmpty()) {
-                    player.addCard(deck.removeFirst());
-                }
+            for (int i = 0; i < INITIAL_HAND_SIZE; i++) {
+                Card card = deck.drawCard();
+                player.addCard(card);
             }
         }
+    }
+
+    /**
+     * Sets up the table with an initial card.
+     *
+     * @throws EmptyDeckException if deck is empty
+     */
+    private void setupTable() throws EmptyDeckException {
+        tableCard = deck.drawCard();
+        tableCard.setFaceUp(true);
+        deck.addToDiscardPile(tableCard);
+        tableSum = tableCard.calculateValue(0);
     }
 
     /**
      * Plays a card from the current player's hand.
+     *
+     * @param card the card to play
+     * @throws GameException if game hasn't started or card is invalid
+     * @throws InvalidCardException if card cannot be played
      */
-    public void playCard(Card card) throws GameException {
-        if (gameOver) throw new GameException("Game is over.");
-
-        Player current = getCurrentPlayer();
-        if (!current.getHand().contains(card)) {
-            throw new InvalidCardException("Player does not have this card.");
+    public void playCard(Card card) throws GameException, InvalidCardException {
+        if (!gameStarted) {
+            throw new GameException("Game has not started");
         }
 
+        if (gameEnded) {
+            throw new GameException("Game has ended");
+        }
+
+        Player currentPlayer = getCurrentPlayer();
+
+        if (currentPlayer.isEliminated()) {
+            throw new GameException("Current player is eliminated");
+        }
+
+        // Validate card can be played
         int cardValue = card.calculateValue(tableSum);
-        if (tableSum + cardValue > 50) {
-            eliminatePlayer(current);
-            throw new InvalidCardException("Playing this card exceeds 50! Player eliminated.");
+        int newSum = tableSum + cardValue;
+
+        if (newSum > MAX_TABLE_SUM) {
+            throw new InvalidCardException("Card would exceed table sum of " + MAX_TABLE_SUM);
         }
 
-        // Jugar la carta
-        current.removeCard(card);
-        discardPile.add(card);
+        // Remove card from player's hand
+        currentPlayer.removeCard(card);
+
+        // Update table
         tableCard = card;
-        tableSum += cardValue;
-
-        // Notificar cambio
-        if (uiUpdateListener != null) {
-            uiUpdateListener.onTableSumChanged(tableSum);
-            uiUpdateListener.onUIUpdateRequired();
-        }
+        tableCard.setFaceUp(true);
+        tableSum = newSum;
+        deck.addToDiscardPile(card);
     }
 
     /**
      * Current player draws a card from the deck.
+     *
+     * @throws EmptyDeckException if deck is empty
+     * @throws GameException if game hasn't started
      */
-    public void drawCard() throws GameException {
-        if (deck.isEmpty()) {
-            if (discardPile.isEmpty()) {
-                throw new GameException("No cards left in deck or discard pile.");
-            }
-            // Reciclar descarte
-            deck.addAll(discardPile);
-            discardPile.clear();
-            Collections.shuffle(deck);
+    public void drawCard() throws EmptyDeckException, GameException {
+        if (!gameStarted) {
+            throw new GameException("Game has not started");
         }
 
-        Player current = getCurrentPlayer();
-        if (current != null && !current.isEliminated()) {
-            current.addCard(deck.removeFirst());
-            if (uiUpdateListener != null) uiUpdateListener.onUIUpdateRequired();
+        Player currentPlayer = getCurrentPlayer();
+        Card card = deck.drawCard();
+        currentPlayer.addCard(card);
+    }
+
+    /**
+     * Advances to the next player's turn.
+     * Checks for player elimination and game end conditions.
+     */
+    public void nextTurn() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+
+        // Skip eliminated players
+        while (getCurrentPlayer().isEliminated() && getActivePlayers().size() > 1) {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
+
+        // Check if current player should be eliminated
+        Player currentPlayer = getCurrentPlayer();
+        if (!currentPlayer.isEliminated() && !currentPlayer.hasPlayableCard(tableSum)) {
+            eliminatePlayer(currentPlayer);
+        }
+
+        // Check for game end
+        checkGameEnd();
+    }
+
+    /**
+     * Eliminates a player from the game.
+     *
+     * @param player the player to eliminate
+     */
+    private void eliminatePlayer(Player player) {
+        player.setEliminated(true);
+        List<Card> cards = player.clearHand();
+        deck.addToDiscardPile(cards);
+    }
+
+    /**
+     * Checks if the game has ended and sets the winner.
+     */
+    private void checkGameEnd() {
+        List<Player> activePlayers = getActivePlayers();
+        if (activePlayers.size() == 1) {
+            gameEnded = true;
+            winner = activePlayers.get(0);
         }
     }
 
     /**
-     * Advances to the next turn.
+     * Gets the current player.
+     *
+     * @return the current player
      */
-    public void nextTurn() {
-        if (players.isEmpty()) return;
-
-        int attempts = 0;
-        do {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            attempts++;
-        } while (getCurrentPlayer().isEliminated() && attempts < players.size());
-
-        // Verificar si queda solo un jugador
-        checkWinCondition();
-    }
-
-    private void eliminatePlayer(Player player) {
-        player.setEliminated(true);
-        // Devolver cartas al mazo (opcional, o al descarte)
-        discardPile.addAll(player.getHand());
-        player.getHand().clear();
-
-        if (gameEventListener != null) {
-            gameEventListener.onPlayerEliminated(player);
-        }
-        checkWinCondition();
-    }
-
-    private void checkWinCondition() {
-        long activePlayers = players.stream().filter(p -> !p.isEliminated()).count();
-        if (activePlayers <= 1) {
-            gameOver = true;
-            winner = players.stream().filter(p -> !p.isEliminated()).findFirst().orElse(null);
-            if (gameEventListener != null && winner != null) {
-                gameEventListener.onGameEnd(winner);
-            }
-        }
-    }
-
-    // Getters
     public Player getCurrentPlayer() {
-        if (players == null || players.isEmpty()) return null;
         return players.get(currentPlayerIndex);
     }
 
-    public List<Player> getPlayers() {
+    /**
+     * Gets all active (non-eliminated) players.
+     *
+     * @return list of active players
+     */
+    public List<Player> getActivePlayers() {
+        List<Player> active = new ArrayList<>();
+        for (Player player : players) {
+            if (!player.isEliminated()) {
+                active.add(player);
+            }
+        }
+        return active;
+    }
+
+    /**
+     * Gets all players in the game.
+     *
+     * @return list of all players
+     */
+    public LinkedList<Player> getPlayers() {
         return players;
     }
 
-    public LinkedList<Card> getDeck() {
-        return deck;
-    }
-
+    /**
+     * Gets the current table sum.
+     *
+     * @return the table sum
+     */
     public int getTableSum() {
         return tableSum;
     }
 
+    /**
+     * Gets the current card on the table.
+     *
+     * @return the table card
+     */
     public Card getTableCard() {
         return tableCard;
     }
 
-    public boolean isGameEnded() {
-        return gameOver;
+    /**
+     * Gets the deck.
+     *
+     * @return the deck
+     */
+    public Deck getDeck() {
+        return deck;
     }
 
+    /**
+     * Checks if the game has started.
+     *
+     * @return true if started, false otherwise
+     */
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    /**
+     * Checks if the game has ended.
+     *
+     * @return true if ended, false otherwise
+     */
+    public boolean isGameEnded() {
+        return gameEnded;
+    }
+
+    /**
+     * Gets the winner of the game.
+     *
+     * @return the winning player, or null if game hasn't ended
+     */
     public Player getWinner() {
         return winner;
+    }
+
+    /**
+     * Gets the maximum allowed table sum.
+     *
+     * @return the maximum sum (50)
+     */
+    public static int getMaxTableSum() {
+        return MAX_TABLE_SUM;
     }
 }

@@ -3,6 +3,7 @@ package com.cincuentazo.controller;
 import com.cincuentazo.model.*;
 import com.cincuentazo.exception.*;
 import com.cincuentazo.interfaces.*;
+import com.cincuentazo.view.VictoryStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -10,6 +11,8 @@ import javafx.scene.layout.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.geometry.Pos;
+import javafx.stage.Stage;
+
 import java.util.List;
 import java.util.Random;
 
@@ -249,22 +252,6 @@ public class GameController implements CardSelectionListener, GameEventListener,
     public void onPlayerEliminated(Player player) {
         onStatusMessage(player.getName() + " has been eliminated!");
         onUIUpdateRequired(); // Refrescar la UI para mostrar la eliminación
-    }
-
-    @Override
-    public void onGameEnd(Player winner) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText("We have a winner!");
-        alert.setContentText(winner.getName() + " wins the game!");
-        alert.showAndWait();
-
-        if (machineThread != null) {
-            machineThread.stopThread();
-        }
-        // Aquí podrías volver al menú principal o cerrar la ventana del juego
-        // Platform.exit(); // Cierra toda la aplicación
-        // o stage.close(); si tienes una referencia al Stage del juego
     }
 
     // ==================== UIUpdateListener Implementation ====================
@@ -619,4 +606,51 @@ public class GameController implements CardSelectionListener, GameEventListener,
     public KeyboardAdapter getKeyboardAdapter() {
         return new KeyboardAdapter();
     }
+    // ==================== Añadir al final de GameController ====================
+
+    /**
+     * Reference to the game stage (needed to close it when showing victory)
+     */
+    private Stage gameStage;
+
+    /**
+     * Sets the game stage reference.
+     * Should be called from GameStage after loading the controller.
+     *
+     * @param stage the game stage
+     */
+    public void setGameStage(Stage stage) {
+        this.gameStage = stage;
+    }
+
+    /**
+     * Shows the victory screen with the winner's name.
+     *
+     * @param winner the winning player
+     */
+    private void showVictoryScreen(Player winner) {
+        // Stop any running machine thread
+        if (machineThread != null) {
+            machineThread.stopThread();
+        }
+
+        // Close the game window
+        if (gameStage != null) {
+            gameStage.close();
+        }
+
+        // Open victory screen
+        Stage victoryStage = new Stage();
+        VictoryStage victory = new VictoryStage(victoryStage, winner.getName());
+        victory.show();
+    }
+
+    // ==================== MODIFICAR EL MÉTODO onGameEnd ====================
+
+    @Override
+    public void onGameEnd(Player winner) {
+        // Show victory screen instead of alert
+        showVictoryScreen(winner);
+    }
 }
+

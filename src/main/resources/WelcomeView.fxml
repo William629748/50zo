@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.Label?>
 <AnchorPane prefHeight="650.0" prefWidth="900.0" styleClass="MainMenu" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cincuentazo.controller.WelcomeViewController">
     <children>
         <fx:define>
@@ -27,25 +28,31 @@
 
         <TextField fx:id="usernameField" alignment="CENTER" focusTraversable="false" layoutX="324.0" layoutY="282.0" prefHeight="87.0" prefWidth="255.0" promptText="Ingresa Tu Usuario" styleClass="TextField" stylesheets="@Styles.css" />
         <RadioButton fx:id="radio1Player" layoutX="45.0" layoutY="230.0" mnemonicParsing="false" text="1 Oponente" textFill="WHITE">
-         <toggleGroup>
-            <ToggleGroup fx:id="playerCountGroup" />
-         </toggleGroup>
-         <font>
-            <Font name="Onyx" size="26.0" />
-         </font></RadioButton>
+            <toggleGroup>
+                <ToggleGroup fx:id="playerCountGroup" />
+            </toggleGroup>
+            <font>
+                <Font name="Onyx" size="26.0" />
+            </font></RadioButton>
         <RadioButton fx:id="radio2Players" layoutX="45.0" layoutY="283.0" mnemonicParsing="false" text="2 Oponentes" textFill="WHITE" toggleGroup="$playerCountGroup">
-         <font>
-            <Font name="Onyx" size="26.0" />
-         </font></RadioButton>
+            <font>
+                <Font name="Onyx" size="26.0" />
+            </font></RadioButton>
         <RadioButton fx:id="radio3Players" layoutX="45.0" layoutY="338.0" mnemonicParsing="false" text="3 Oponentes" textFill="WHITE" toggleGroup="$playerCountGroup">
-         <font>
-            <Font name="Onyx" size="26.0" />
-         </font></RadioButton>
-      <ImageView fitHeight="68.0" fitWidth="183.0" layoutX="22.0" layoutY="149.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@com.cincuentazo.images/PickPlayersTittle.png" />
-         </image>
-      </ImageView>
+            <font>
+                <Font name="Onyx" size="26.0" />
+            </font></RadioButton>
+        <ImageView fitHeight="68.0" fitWidth="183.0" layoutX="22.0" layoutY="149.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@com.cincuentazo.images/PickPlayersTittle.png" />
+            </image>
+        </ImageView>
+        <Label fx:id="statusLabel" layoutX="250.0" layoutY="520.0" prefHeight="30.0" prefWidth="400.0"
+               text="" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+            <font>
+                <Font name="Onyx" size="20.0" />
+            </font>
+        </Label>
 
     </children>
 </AnchorPane>
