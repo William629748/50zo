@@ -1,38 +1,42 @@
 package com.cincuentazo.view;
 
-import javafx.fxml.FXMLLoader; // Necesario para cargar el FXML
+import com.cincuentazo.controller.GameController;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 
 public class GameStage extends Stage {
 
-    public GameStage() {
-        try {
-            // 1. Cargar el FXML para GameView
-            FXMLLoader loader = new FXMLLoader(
-                    // Asumiendo que GameView.fxml está en la misma ubicación que WelcomeView.fxml
-                    getClass().getResource("/GameView.fxml")
-            );
+    private GameController gameController;
 
-            // 2. Cargar el nodo raíz del FXML
-            Parent root = loader.load();
+    // Constructor principal: ahora recibe el número de máquinas y el nombre de usuario
+    public GameStage(int numMachines, String username) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GameView.fxml"));
+        Parent root = loader.load();
+        this.gameController = loader.getController(); // Obtenemos el controlador después de cargar FXML
 
-            // 3. Crear la Scene usando solo el 'root'.
-            // Esto asegura que se usen las dimensiones (900x650) definidas en GameView.fxml.
-            Scene scene = new Scene(root);
+        // Es crucial llamar a startGame() aquí para inicializar el GameModel
+        this.gameController.startGame(numMachines, username);
 
-            // 4. Configurar el Stage
-            this.setScene(scene);
-            this.setTitle("Cincuentazo - The Game");
-            this.setResizable(false);
+        Scene scene = new Scene(root);
+        scene.setOnKeyPressed(gameController.getKeyboardAdapter()); // Asigna el KeyboardAdapter a la escena
 
-        } catch (IOException e) {
-            // Manejo de error si el archivo FXML no se encuentra o no se puede cargar
-            System.err.println("Error loading GameView.fxml: " + e.getMessage());
-            e.printStackTrace();
-            // Opcional: Podrías crear una UI de respaldo aquí, similar a WelcomeStage.
-        }
+        this.setTitle("Cincuentazo - The Game");
+        this.setScene(scene);
+        this.setResizable(false);
+    }
+
+    // Constructor sin parámetros (opcional, si aún lo usas en algún lugar)
+    // Puede lanzar un error o usar valores por defecto para forzar el uso del constructor con parámetros.
+    public GameStage() throws IOException {
+        // Llamar al constructor principal con valores por defecto
+        this(1, "Default Player");
+    }
+
+    public GameController getGameController() {
+        return gameController;
     }
 }
