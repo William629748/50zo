@@ -12,6 +12,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.List;
 import java.util.Random;
@@ -345,32 +347,94 @@ public class GameController implements CardSelectionListener, GameEventListener,
     }
 
     /**
-     * Creates a button representing a card with mouse event handling.
+     * Gets the image path for a card based on its rank and suit.
+     *
+     * @param card the card
+     * @return the path to the card image
+     */
+    private String getCardImagePath(Card card) {
+        String rank = card.getRank().getSymbol();
+        String suit = getSuitName(card.getSuit());
+
+        // Las figuras (J, Q, K, A) tienen mayúscula inicial
+        if (rank.equals("J") || rank.equals("Q") || rank.equals("K") || rank.equals("A")) {
+            return "/com/cincuentazo/com.cincuentazo.images/" + rank + suit + ".png";
+        }
+
+        // Los números (2-10) van en minúscula
+        return "/com/cincuentazo/com.cincuentazo.images/" + rank.toLowerCase() + suit + ".png";
+    }
+
+    /**
+     * Converts the suit enum to the image filename format.
+     *
+     * @param suit the suit of the card
+     * @return the suit name for the filename
+     */
+    private String getSuitName(Card.Suit suit) {
+        return switch (suit) {
+            case HEARTS -> "hearts";
+            case DIAMONDS -> "diamonds";
+            case CLUBS -> "clubs";
+            case SPADES -> "spades";
+        };
+    }
+
+    /**
+     * Creates a button representing a card with an image.
      *
      * @param card the card to represent
-     * @return the button
+     * @return the button with card image
      */
     private Button createCardButton(Card card) {
-        Button btn = new Button(card.toString());
-        btn.setStyle("-fx-font-size: 20px; -fx-min-width: 60px; -fx-min-height: 80px;");
+        Button btn = new Button();
 
-        btn.setOnMouseEntered(e -> btn.setStyle(
-                "-fx-font-size: 20px; -fx-min-width: 60px; -fx-min-height: 80px; " +
-                        "-fx-background-color: #e0e0e0;"
-        ));
+        // Intentar cargar la imagen de la carta
+        try {
+            String imagePath = getCardImagePath(card);
+            ImageView imageView = new ImageView(new Image(
+                    getClass().getResourceAsStream(imagePath)
+            ));
 
-        btn.setOnMouseExited(e -> btn.setStyle(
-                "-fx-font-size: 20px; -fx-min-width: 60px; -fx-min-height: 80px;"
-        ));
+            // Ajustar tamaño de la imagen
+            imageView.setFitWidth(70);
+            imageView.setFitHeight(95);
+            imageView.setPreserveRatio(true);
+
+            btn.setGraphic(imageView);
+            btn.setStyle("-fx-background-color: transparent; -fx-padding: 2; -fx-cursor: hand;");
+            btn.setPrefSize(75, 100);
+
+        } catch (Exception e) {
+            // Si falla cargar la imagen, usar texto como fallback
+            System.err.println("Error loading card image: " + getCardImagePath(card));
+            e.printStackTrace();
+            btn.setText(card.toString());
+            btn.setStyle("-fx-font-size: 20px; -fx-min-width: 60px; -fx-min-height: 80px;");
+        }
+
+        // Efectos hover - resalta la carta al pasar el mouse
+        final String originalStyle = btn.getStyle();
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle(originalStyle + "-fx-effect: dropshadow(gaussian, rgba(50,205,50,0.9), 15, 0.7, 0, 0);");
+            btn.setScaleX(1.1);
+            btn.setScaleY(1.1);
+        });
+
+        btn.setOnMouseExited(e -> {
+            btn.setStyle(originalStyle);
+            btn.setScaleX(1.0);
+            btn.setScaleY(1.0);
+        });
 
         btn.setOnMouseClicked(e -> onCardSelected(card));
 
-        // Check if card is playable (logic moved to GameModel.isCardPlayable for robustness)
-        // Por ahora, lo mantenemos aquí si gameModel.isCardPlayable() no existe
+        // Check if card is playable
         int newSum = gameModel.getTableSum() + card.calculateValue(gameModel.getTableSum());
         if (newSum > 50) {
             btn.setDisable(true);
-            btn.setStyle(btn.getStyle() + "-fx-opacity: 0.5;");
+            btn.setOpacity(0.4);
+            btn.setStyle(btn.getStyle() + "-fx-cursor: not-allowed;");
         }
 
         return btn;
@@ -384,7 +448,7 @@ public class GameController implements CardSelectionListener, GameEventListener,
      */
     private void updateMachineHand(Player player, int machineIndex) {
         VBox machineBox = getMachineBox(machineIndex);
-        if (machineBox == null) return; // Asegurar que el VBox exista
+        if (machineBox == null) return;
 
         machineBox.getChildren().clear();
 
@@ -401,10 +465,23 @@ public class GameController implements CardSelectionListener, GameEventListener,
 
         HBox cardsBox = new HBox(5);
         cardsBox.setAlignment(Pos.CENTER);
+
         for (int i = 0; i < player.getHandSize(); i++) {
-            Label cardLabel = new Label("🂠"); // Símbolo de carta oculta
-            cardLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: lightgray;");
-            cardsBox.getChildren().add(cardLabel);
+            // Mostrar la imagen de la parte trasera de la carta
+            try {
+                ImageView cardBack = new ImageView(new Image(
+                        getClass().getResourceAsStream("/com/cincuentazo/com.cincuentazo.images/back.png")
+                ));
+                cardBack.setFitWidth(50);
+                cardBack.setFitHeight(70);
+                cardBack.setPreserveRatio(true);
+                cardsBox.getChildren().add(cardBack);
+            } catch (Exception e) {
+                // Fallback si no se puede cargar la imagen
+                Label cardLabel = new Label("🂠");
+                cardLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: lightgray;");
+                cardsBox.getChildren().add(cardLabel);
+            }
         }
         machineBox.getChildren().add(cardsBox);
     }
