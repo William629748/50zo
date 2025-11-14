@@ -14,6 +14,8 @@ import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Random;
@@ -29,7 +31,8 @@ import java.util.Random;
 public class GameController implements CardSelectionListener, GameEventListener, UIUpdateListener {
 
     @FXML private Label tableSumLabel;
-    @FXML private Label tableCardLabel;
+    @FXML private VBox tableCardBox;
+    @FXML private ImageView tableCardImage;
     @FXML private Label currentPlayerLabel;
     @FXML private Label deckSizeLabel;
     @FXML private HBox humanHandBox;
@@ -284,13 +287,34 @@ public class GameController implements CardSelectionListener, GameEventListener,
     private void updateTableInfo() {
         onTableSumChanged(gameModel.getTableSum());
         Card tableCard = gameModel.getTableCard();
+
         if (tableCard != null) {
-            tableCardLabel.setText(tableCard.toString());
-            tableCardLabel.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;"); // Asegurar que sea visible
+            // Mostrar la imagen de la carta en la mesa
+            try {
+                String imagePath = getCardImagePath(tableCard);
+                Image cardImage = new Image(getClass().getResourceAsStream(imagePath));
+                tableCardImage.setImage(cardImage);
+
+                // Efecto de transición suave al cambiar carta
+                tableCardImage.setOpacity(0);
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(
+                        javafx.util.Duration.millis(300), tableCardImage
+                );
+                ft.setFromValue(0.0);
+                ft.setToValue(1.0);
+                ft.play();
+
+            } catch (Exception e) {
+                System.err.println("Error loading table card image: " + getCardImagePath(tableCard));
+                e.printStackTrace();
+                // Si falla, mostrar al menos el texto
+                tableCardImage.setImage(null);
+            }
         } else {
-            tableCardLabel.setText("-"); // Mostrar algo si no hay carta en la mesa
-            tableCardLabel.setStyle(""); // Limpiar estilos si no hay carta
+            // No hay carta en la mesa, limpiar la imagen
+            tableCardImage.setImage(null);
         }
+
         deckSizeLabel.setText("Deck: " + gameModel.getDeck().size());
     }
 
