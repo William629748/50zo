@@ -4,8 +4,9 @@ import com.cincuentazo.controller.WelcomeViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle; // <-- AÑADE ESTE IMPORT
+import javafx.stage.StageStyle;
 import java.io.IOException;
 
 /**
@@ -30,10 +31,8 @@ public class WelcomeStage {
         this.primaryStage = primaryStage;
         this.welcomeStage = new Stage();
 
-        // ==================== LÍNEA AÑADIDA ====================
         // Esta línea quita toda la decoración de la ventana
         this.welcomeStage.initStyle(StageStyle.UNDECORATED);
-        // ========================================================
 
         setupUI();
     }
@@ -62,8 +61,18 @@ public class WelcomeStage {
 
             // Configure stage
             welcomeStage.setScene(scene);
-            // welcomeStage.setTitle("Cincuentazo - Welcome"); // <-- Esta línea ya no es necesaria
             welcomeStage.setResizable(false);
+
+            // ==================== AGREGAR ÍCONO ====================
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                welcomeStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ========================================================
 
             // Handle close request
             welcomeStage.setOnCloseRequest(e -> {
@@ -97,9 +106,8 @@ public class WelcomeStage {
 
         root.getChildren().addAll(errorLabel, exitButton);
 
-        Scene scene = new Scene(root); // Usa el tamaño preferido
+        Scene scene = new Scene(root);
         welcomeStage.setScene(scene);
-        // welcomeStage.setTitle("Error - Cincuentazo"); // <-- Esta línea ya no es necesaria
     }
 
     /**

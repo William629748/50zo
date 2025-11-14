@@ -198,3 +198,11 @@
     -fx-background-image: url("com.cincuentazo.images/VictoryBackground.jpg");
     -fx-background-size: 100% 100%;
 }
+.table-card-area {
+    -fx-background-color: rgba(0, 100, 0, 0.3);
+    -fx-border-color: gold;
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0, 0);
+}

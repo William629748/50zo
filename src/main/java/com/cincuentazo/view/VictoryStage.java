@@ -4,6 +4,7 @@ import com.cincuentazo.controller.VictoryController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -56,6 +57,17 @@ public class VictoryStage {
             victoryStage.setScene(scene);
             victoryStage.setTitle("Victory!");
             victoryStage.setResizable(false);
+
+            // ==================== AGREGAR ÍCONO ====================
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                victoryStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ========================================================
 
         } catch (IOException e) {
             System.err.println("Error loading VictoryView.fxml: " + e.getMessage());

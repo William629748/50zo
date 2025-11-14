@@ -4,6 +4,7 @@ import com.cincuentazo.controller.GameController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -53,6 +54,17 @@ public class GameStage {
             gameStage.setScene(scene);
             gameStage.setTitle("Cincuentazo - Game in Progress");
             gameStage.setResizable(false);
+
+            // ==================== AGREGAR ÍCONO ====================
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                gameStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ========================================================
 
             // Pass stage reference to controller
             controller.setGameStage(gameStage);
