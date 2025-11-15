@@ -9,101 +9,113 @@ import javafx.stage.StageStyle; // <-- AÑADE ESTE IMPORT
 import java.io.IOException;
 
 /**
- * Welcome screen stage that loads the main menu from FXML.
- * Displays player selection and game start options.
+ * Represents the welcome screen window (Stage) of the Cincuentazo application.
+ * This class is responsible for loading the {@code WelcomeView.fxml} file,
+ * setting up the scene, connecting to the {@link WelcomeViewController},
+ * and managing the lifecycle of the welcome window.
+ * It serves as the main entry point for the user to start a new game or exit.
  *
  * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class WelcomeStage {
 
-    private Stage primaryStage;
-    private Stage welcomeStage;
-    private WelcomeViewController controller;
+    private Stage primaryStage;     // The primary stage of the entire application.
+    private Stage welcomeStage;     // The actual stage for the welcome screen.
+    private WelcomeViewController controller; // The controller managing the welcome screen's logic.
 
     /**
-     * Constructs a WelcomeStage with reference to primary stage.
+     * Constructs a new WelcomeStage.
+     * Initializes the welcome window and sets it to be undecorated, then proceeds to set up the UI.
      *
-     * @param primaryStage the main application stage
+     * @param primaryStage The main application stage, typically passed from the `Application` class.
      */
     public WelcomeStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.welcomeStage = new Stage();
 
         // ==================== LÍNEA AÑADIDA ====================
-        // Esta línea quita toda la decoración de la ventana
+        // This line removes all native window decorations (title bar, close/minimize buttons).
         this.welcomeStage.initStyle(StageStyle.UNDECORATED);
         // ========================================================
 
-        setupUI();
+        setupUI(); // Calls the method to load FXML and set up the scene.
     }
 
     /**
-     * Sets up the user interface by loading FXML.
+     * Sets up the user interface for the welcome screen by loading the {@code WelcomeView.fxml} file.
+     * It connects the FXML elements to the {@link WelcomeViewController}, passes the stage reference
+     * to the controller, sets up keyboard event handling, and configures the stage properties.
+     * If FXML loading fails, a fallback UI is created.
      */
     private void setupUI() {
         try {
-            // Load FXML
+            // Load FXML for the welcome view.
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/WelcomeView.fxml")
             );
 
-            Parent root = loader.load();
-            controller = loader.getController();
+            Parent root = loader.load(); // Load the FXML root element.
+            controller = loader.getController(); // Get the WelcomeViewController instance associated with the FXML.
 
-            // Pass stage reference to controller
+            // Pass the welcome stage reference to the controller, allowing the controller to interact with the stage.
             controller.setStage(welcomeStage);
 
-            // Create scene (usa el tamaño del FXML)
+            // Create a new scene from the loaded FXML root. The size will be determined by FXML layout.
             Scene scene = new Scene(root);
 
-            // Add keyboard event handler
+            // Add a global keyboard event handler to the scene.
+            // The controller's handleKeyPressed method will process key events.
             scene.setOnKeyPressed(controller::handleKeyPressed);
 
-            // Configure stage
+            // Configure the stage properties.
             welcomeStage.setScene(scene);
-            // welcomeStage.setTitle("Cincuentazo - Welcome"); // <-- Esta línea ya no es necesaria
-            welcomeStage.setResizable(false);
+            // welcomeStage.setTitle("Cincuentazo - Welcome"); // <-- This line is no longer needed with UNDECORATED style.
+            welcomeStage.setResizable(false); // Prevent resizing of the welcome window.
 
-            // Handle close request
+            // Set a custom handler for when the window close request occurs (e.g., from an internal exit button).
             welcomeStage.setOnCloseRequest(e -> {
-                e.consume();
-                handleClose();
+                e.consume(); // Consume the event to prevent default close behavior.
+                handleClose(); // Call custom close handling with confirmation.
             });
 
         } catch (IOException e) {
             System.err.println("Error loading WelcomeView.fxml: " + e.getMessage());
             e.printStackTrace();
-            createFallbackUI();
+            createFallbackUI(); // Provide a simple error UI if FXML fails to load.
         }
     }
 
     /**
-     * Creates a fallback UI if FXML loading fails.
+     * Creates a simple fallback user interface (UI) to display an error message
+     * and an exit button. This method is called if there is an {@link IOException}
+     * during the loading of the {@code WelcomeView.fxml} file, preventing the main UI from showing.
      */
     private void createFallbackUI() {
-        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(20);
-        root.setAlignment(javafx.geometry.Pos.CENTER);
-        root.setStyle("-fx-background-color: #2c3e50; -fx-padding: 40;");
+        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(20); // Create a vertical box with spacing.
+        root.setAlignment(javafx.geometry.Pos.CENTER); // Center content in the box.
+        root.setStyle("-fx-background-color: #2c3e50; -fx-padding: 40;"); // Apply dark background and padding.
 
         javafx.scene.control.Label errorLabel = new javafx.scene.control.Label(
                 "Error loading main menu interface.\nPlease check that WelcomeView.fxml exists in:\nsrc/main/resources/"
         );
-        errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #e74c3c; -fx-text-alignment: center;");
+        errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #e74c3c; -fx-text-alignment: center;"); // Style for error text.
 
         javafx.scene.control.Button exitButton = new javafx.scene.control.Button("Exit");
-        exitButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 30;");
-        exitButton.setOnAction(e -> System.exit(1));
+        exitButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 30;"); // Style for exit button.
+        exitButton.setOnAction(e -> System.exit(1)); // Set action to exit application on button click.
 
-        root.getChildren().addAll(errorLabel, exitButton);
+        root.getChildren().addAll(errorLabel, exitButton); // Add elements to the root.
 
-        Scene scene = new Scene(root); // Usa el tamaño preferido
+        Scene scene = new Scene(root); // Create a new scene for the fallback UI.
         welcomeStage.setScene(scene);
-        // welcomeStage.setTitle("Error - Cincuentazo"); // <-- Esta línea ya no es necesaria
+        // welcomeStage.setTitle("Error - Cincuentazo"); // <-- This line is no longer needed with UNDECORATED style.
     }
 
     /**
-     * Handles the window close request.
+     * Handles the window close request for the welcome stage.
+     * It displays a confirmation dialog to the user, and if confirmed,
+     * the application is terminated.
      */
     private void handleClose() {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
@@ -115,31 +127,31 @@ public class WelcomeStage {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
-                System.exit(0);
+                System.exit(0); // Terminate the application if the user confirms.
             }
         });
     }
 
     /**
-     * Shows the welcome stage.
+     * Displays the welcome stage, making it visible to the user.
      */
     public void show() {
         welcomeStage.show();
     }
 
     /**
-     * Gets the controller instance.
+     * Retrieves the {@link WelcomeViewController} instance associated with this welcome stage.
      *
-     * @return the main menu controller
+     * @return The {@link WelcomeViewController} instance.
      */
     public WelcomeViewController getController() {
         return controller;
     }
 
     /**
-     * Gets the welcome stage.
+     * Retrieves the {@link Stage} instance that hosts the welcome screen.
      *
-     * @return the stage
+     * @return The {@link Stage} object representing the welcome window.
      */
     public Stage getStage() {
         return welcomeStage;

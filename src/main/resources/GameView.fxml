@@ -6,37 +6,44 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="650.0" prefWidth="900.0" styleClass="GameBackground" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cincuentazo.controller.GameController">
     <children>
         <Button fx:id="rulesButton" layoutX="818.0" layoutY="6.0" maxHeight="305.0" maxWidth="304.0" minHeight="25.0" minWidth="52.0" mnemonicParsing="false" onAction="#showHelp" prefHeight="25.0" prefWidth="52.0" styleClass="HelpButton" stylesheets="@Styles.css" text="Help" />
         <Button fx:id="exitButton" layoutX="6.0" layoutY="6.0" mnemonicParsing="false" onAction="#showGameMenu" styleClass="GoBackButton" stylesheets="@Styles.css" text="Back" />
 
-        <VBox alignment="CENTER" layoutX="379.0" layoutY="245.0" spacing="10.0">
+        <VBox alignment="CENTER" layoutX="342.0" layoutY="195.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <HBox alignment="CENTER" spacing="20.0">
                 <Label fx:id="tableSumLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" text="Sum: 0" />
                 <Label fx:id="deckSizeLabel" style="-fx-text-fill: white;" text="Deck: 40" />
             </HBox>
 
             <!-- ESTA ES LA CARTA EN LA MESA CON IMAGEN -->
-            <VBox fx:id="tableCardBox" alignment="CENTER" prefHeight="150" prefWidth="110" style="-fx-background-color: rgba(0, 100, 0, 0.3); -fx-border-color: gold; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px;">
+            <VBox fx:id="tableCardBox" alignment="CENTER" prefHeight="150" prefWidth="206.0" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px;">
                 <ImageView fx:id="tableCardImage" fitHeight="140" fitWidth="100" preserveRatio="true" />
             </VBox>
 
-            <Label fx:id="currentPlayerLabel" style="-fx-text-fill: lightgreen;" text="Current: Player 1" />
-            <Label fx:id="statusLabel" style="-fx-text-fill: white; -fx-font-style: italic;" text="Game started! Your turn." />
+            <Label fx:id="currentPlayerLabel" style="-fx-text-fill: lightgreen;" text="Current: Player 1">
+            <font>
+               <Font size="15.0" />
+            </font></Label>
+            <Label fx:id="statusLabel" style="-fx-text-fill: white; -fx-font-style: italic;" text="Game started! Your turn.">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
         </VBox>
 
         <HBox fx:id="humanHandBox" alignment="CENTER" layoutX="151.0" layoutY="491.0" prefHeight="100.0" prefWidth="600.0" spacing="10.0" style="-fx-border-color: white; -fx-border-radius: 10; -fx-padding: 10;">
         </HBox>
 
-        <VBox fx:id="machine1Box" alignment="CENTER" layoutX="725.0" layoutY="200.0" prefHeight="250.0" prefWidth="100.0" spacing="5.0" style="-fx-border-color: white; -fx-border-radius: 10;">
+        <VBox fx:id="machine1Box" alignment="CENTER" layoutX="667.0" layoutY="200.0" prefHeight="250.0" prefWidth="100.0" spacing="5.0" style="-fx-border-color: white; -fx-border-radius: 10;">
         </VBox>
 
-        <VBox fx:id="machine2Box" alignment="CENTER" layoutX="72.0" layoutY="200.0" prefHeight="250.0" prefWidth="100.0" spacing="5.0" style="-fx-border-color: white; -fx-border-radius: 10;">
+        <VBox fx:id="machine2Box" alignment="CENTER" layoutX="20.0" layoutY="200.0" prefHeight="250.0" prefWidth="100.0" spacing="5.0" style="-fx-border-color: white; -fx-border-radius: 10;">
         </VBox>
 
-        <VBox fx:id="machine3Box" alignment="CENTER" layoutX="333.0" layoutY="110.0" prefHeight="89.0" prefWidth="218.0" spacing="5.0" style="-fx-border-color: green; -fx-border-radius: 5;" visible="false">
+        <VBox fx:id="machine3Box" alignment="CENTER" layoutX="303.0" layoutY="68.0" prefHeight="107.0" prefWidth="284.0" spacing="5.0" style="-fx-border-color: white; -fx-border-radius: 10;" visible="false">
         </VBox>
 
         <Button fx:id="endTurnButton" layoutX="781.0" layoutY="488.0" maxHeight="200.0" maxWidth="206.0" mnemonicParsing="false" onAction="#handleEndTurn" prefHeight="107.0" prefWidth="75.0" styleClass="ExtraCard" stylesheets="@Styles.css" text="End Turn" />

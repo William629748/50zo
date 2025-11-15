@@ -6,75 +6,88 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import java.io.IOException;
+import javafx.stage.StageStyle;
 
 /**
- * Game stage that displays the main game interface.
- * Loads FXML and connects with GameController.
+ * Represents the main game window (Stage) for the Cincuentazo game.
+ * This class is responsible for loading the {@code GameView.fxml},
+ * setting up the scene, connecting to the {@link GameController},
+ * and managing the lifecycle of the game window.
  *
  * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class GameStage {
 
-    private Stage primaryStage;
-    private Stage gameStage;
-    private int numMachines;
-    private String humanUsername;
-    private GameController controller;
+    private Stage primaryStage;     // Reference to the main application stage (e.g., WelcomeStage's stage)
+    private Stage gameStage;        // The actual stage for the game interface
+    private int numMachines;        // Number of machine opponents selected
+    private String humanUsername;   // Username of the human player
+    private GameController controller; // The controller managing the game logic and UI updates
 
     /**
-     * Constructs a GameStage.
+     * Constructs a new GameStage.
+     * Initializes the game window with specific settings and loads the UI.
+     *
+     * @param primaryStage The primary stage of the application, used to return to the welcome screen.
+     * @param numMachines The number of machine opponents for this game session.
+     * @param humanUsername The username of the human player.
      */
     public GameStage(Stage primaryStage, int numMachines, String humanUsername) {
         this.primaryStage = primaryStage;
         this.numMachines = numMachines;
         this.humanUsername = humanUsername;
         this.gameStage = new Stage();
-        setupUI();
+        this.gameStage.initStyle(StageStyle.UNDECORATED); // Makes the window without OS decorations
+        setupUI(); // Calls method to load FXML and set up the scene
     }
 
     /**
-     * Sets up the game user interface using FXML.
+     * Sets up the game user interface by loading the {@code GameView.fxml} file.
+     * It connects the FXML elements to the {@link GameController}, sets up event handlers,
+     * and initializes the game. If FXML loading fails, a fallback UI is created.
      */
     private void setupUI() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/GameView.fxml")
+                    getClass().getResource("/GameView.fxml") // Path to the FXML layout file
             );
 
-            Parent root = loader.load();
-            controller = loader.getController();
+            Parent root = loader.load(); // Load the FXML root element
+            controller = loader.getController(); // Get the GameController instance associated with the FXML
 
-            Scene scene = new Scene(root, 900, 700);
+            Scene scene = new Scene(root, 900, 700); // Create a new scene with specified dimensions
 
-            // Setup keyboard handling
+            // Set up keyboard event handling for the entire scene
             scene.setOnKeyPressed(controller.getKeyboardAdapter());
 
             gameStage.setScene(scene);
             gameStage.setTitle("Cincuentazo - Game in Progress");
-            gameStage.setResizable(false);
+            gameStage.setResizable(false); // Prevent resizing of the game window
 
-            // Pass stage reference to controller
+            // Pass the game stage reference to the controller for managing window-specific actions (e.g., closing)
             controller.setGameStage(gameStage);
 
-            // Start the game with username
+            // Start the actual game logic within the controller
             controller.startGame(numMachines, humanUsername);
 
-            // Handle window close
+            // Custom handler for when the game window is requested to be closed (e.g., by clicking X button)
             gameStage.setOnCloseRequest(e -> {
-                e.consume();
-                handleExit();
+                e.consume(); // Consume the event to prevent default close behavior
+                handleExit(); // Call custom exit handling with confirmation
             });
 
         } catch (IOException e) {
-            System.err.println("Error loading FXML: " + e.getMessage());
+            System.err.println("Error loading FXML for GameStage: " + e.getMessage());
             e.printStackTrace();
-            createFallbackUI();
+            createFallbackUI(); // Provide a simple error UI if FXML fails to load
         }
     }
 
     /**
-     * Creates a fallback UI if FXML loading fails.
+     * Creates a simple fallback user interface (UI) to display an error message.
+     * This method is called if there is an {@link IOException} during the loading
+     * of the {@code GameView.fxml} file.
      */
     private void createFallbackUI() {
         javafx.scene.layout.BorderPane root = new javafx.scene.layout.BorderPane();
@@ -86,10 +99,13 @@ public class GameStage {
 
         Scene scene = new Scene(root, 900, 700);
         gameStage.setScene(scene);
+        gameStage.setTitle("Error - Cincuentazo");
     }
 
     /**
-     * Handles the exit action with confirmation.
+     * Handles the exit action for the game stage, typically triggered by closing the window.
+     * It displays a confirmation dialog to the user before closing the game
+     * and returning to the {@link WelcomeStage}.
      */
     private void handleExit() {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
@@ -101,26 +117,29 @@ public class GameStage {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
-                gameStage.close();
+                gameStage.close(); // Close the current game window
 
-                // Return to welcome screen
-                WelcomeStage welcomeStage = new WelcomeStage(primaryStage);
+                // Re-open or show the welcome screen (primaryStage)
+                // Note: WelcomeStage should ideally re-show its existing stage if primaryStage is it.
+                // Creating a new WelcomeStage here means a new FXML load.
+                WelcomeStage welcomeStage = new WelcomeStage(primaryStage); // Creates a new welcome stage
                 welcomeStage.show();
             }
         });
     }
 
     /**
-     * Shows the game stage.
+     * Displays the game stage, making it visible to the user.
      */
     public void show() {
         gameStage.show();
     }
 
     /**
-     * Gets the game controller.
+     * Retrieves the {@link GameController} instance associated with this game stage.
+     * This can be used for direct interaction with the game's control logic.
      *
-     * @return the controller
+     * @return The {@link GameController} instance.
      */
     public GameController getController() {
         return controller;

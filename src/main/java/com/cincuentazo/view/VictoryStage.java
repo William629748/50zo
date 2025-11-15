@@ -5,102 +5,72 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import java.io.IOException;
 
 /**
- * Victory screen stage that displays the winner.
- * Loads VictoryView.fxml and shows the winner.
+ * Represents the victory screen window (Stage) of the Cincuentazo game.
+ * This class is responsible for loading the {@code VictoryView.fxml},
+ * setting up the scene, connecting to the {@link VictoryController},
+ * and displaying the winner's information.
  *
  * @author Cincuentazo Team
  * @version 1.0.0
  */
 public class VictoryStage {
 
-    private Stage victoryStage;
-    private VictoryController controller;
-    private String winnerName;
+    private Stage victoryStage; // The actual stage for the victory interface
+    private String winnerName;  // The name of the player who won the game
 
     /**
-     * Constructs a VictoryStage with the winner's name.
+     * Constructs a new VictoryStage.
+     * Initializes the victory window with specific settings and loads the UI.
      *
-     * @param victoryStage the stage to display
-     * @param winnerName the name of the winning player
+     * @param victoryStage The {@link Stage} instance that will host the victory screen.
+     * @param winnerName The name of the player who won the game.
      */
     public VictoryStage(Stage victoryStage, String winnerName) {
         this.victoryStage = victoryStage;
         this.winnerName = winnerName;
-        setupUI();
+        this.victoryStage.initStyle(StageStyle.UNDECORATED); // Sets the window to be undecorated (no native title bar/buttons)
+        setupUI(); // Calls method to load FXML and set up the scene
     }
 
     /**
-     * Sets up the user interface by loading FXML.
+     * Sets up the victory screen user interface by loading the {@code VictoryView.fxml} file.
+     * It retrieves the associated {@link VictoryController}, passes the winner's name and
+     * the stage reference to it, and then sets the scene for the stage.
      */
     private void setupUI() {
         try {
-            // Load FXML
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/cincuentazo/view/VictoryView.fxml")
-            );
+            // Ensure the path to the FXML file is correct.
+            // If VictoryView.fxml is in the root of resources, use "/VictoryView.fxml"
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/VictoryView.fxml"));
 
-            Parent root = loader.load();
-            controller = loader.getController();
+            Parent root = loader.load(); // Load the FXML root element
 
-            // Pass stage and winner name to controller
+            // Get the controller instance and pass necessary data (stage and winner name) to it
+            VictoryController controller = loader.getController();
             controller.setStage(victoryStage);
-            controller.setWinner(winnerName);
+            controller.setWinner(winnerName); // Pass the winner's name (e.g., "User" or "Bot 1")
 
-            // Create scene
-            Scene scene = new Scene(root, 900, 650);
-
-            // Configure stage
+            Scene scene = new Scene(root); // Create a new scene from the loaded FXML
             victoryStage.setScene(scene);
-            victoryStage.setTitle("Victory!");
-            victoryStage.setResizable(false);
+            victoryStage.setTitle("Victory!"); // Set the title for the victory window
+            victoryStage.setResizable(false); // Prevent resizing of the victory window
 
         } catch (IOException e) {
-            System.err.println("Error loading VictoryView.fxml: " + e.getMessage());
+            // Prints the stack trace if there's an error loading the FXML file
+            System.err.println("Error loading FXML for VictoryStage: " + e.getMessage());
             e.printStackTrace();
-            createFallbackUI();
+            // In a production app, you might want a more user-friendly error display here.
         }
     }
 
     /**
-     * Creates a fallback UI if FXML loading fails.
-     */
-    private void createFallbackUI() {
-        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(20);
-        root.setAlignment(javafx.geometry.Pos.CENTER);
-        root.setStyle("-fx-background-color: #2c3e50; -fx-padding: 40;");
-
-        javafx.scene.control.Label winnerLabel = new javafx.scene.control.Label(
-                winnerName + " WINS!"
-        );
-        winnerLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: gold; -fx-font-weight: bold;");
-
-        javafx.scene.control.Button exitButton = new javafx.scene.control.Button("Exit");
-        exitButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 30;");
-        exitButton.setOnAction(e -> System.exit(0));
-
-        root.getChildren().addAll(winnerLabel, exitButton);
-
-        Scene scene = new Scene(root, 900, 650);
-        victoryStage.setScene(scene);
-        victoryStage.setTitle("Victory!");
-    }
-
-    /**
-     * Shows the victory stage.
+     * Displays the victory stage, making it visible to the user.
      */
     public void show() {
         victoryStage.show();
-    }
-
-    /**
-     * Gets the controller instance.
-     *
-     * @return the victory controller
-     */
-    public VictoryController getController() {
-        return controller;
     }
 }
