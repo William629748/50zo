@@ -1,0 +1,9 @@
+module:com.example.proyecto3_
+com.example.proyecto3_
+com.example.proyecto3_.controller
+com.example.proyecto3_.model.Cards
+com.example.proyecto3_.model.Deck
+com.example.proyecto3_.model.Exceptions
+com.example.proyecto3_.model.Game
+com.example.proyecto3_.model.Player
+com.example.proyecto3_.view
