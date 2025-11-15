@@ -4,6 +4,7 @@ import com.cincuentazo.controller.VictoryController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import java.io.IOException;
@@ -58,6 +59,17 @@ public class VictoryStage {
             victoryStage.setScene(scene);
             victoryStage.setTitle("Victory!"); // Set the title for the victory window
             victoryStage.setResizable(false); // Prevent resizing of the victory window
+
+            // Add Icon
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                victoryStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ============================================================
 
         } catch (IOException e) {
             // Prints the stack trace if there's an error loading the FXML file

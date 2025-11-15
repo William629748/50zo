@@ -4,6 +4,7 @@ import com.cincuentazo.controller.GameController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 import javafx.stage.StageStyle;
@@ -65,6 +66,17 @@ public class GameStage {
             gameStage.setTitle("Cincuentazo - Game in Progress");
             gameStage.setResizable(false); // Prevent resizing of the game window
 
+            // Add Icon
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                gameStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ============================================================
+
             // Pass the game stage reference to the controller for managing window-specific actions (e.g., closing)
             controller.setGameStage(gameStage);
 
@@ -120,8 +132,6 @@ public class GameStage {
                 gameStage.close(); // Close the current game window
 
                 // Re-open or show the welcome screen (primaryStage)
-                // Note: WelcomeStage should ideally re-show its existing stage if primaryStage is it.
-                // Creating a new WelcomeStage here means a new FXML load.
                 WelcomeStage welcomeStage = new WelcomeStage(primaryStage); // Creates a new welcome stage
                 welcomeStage.show();
             }

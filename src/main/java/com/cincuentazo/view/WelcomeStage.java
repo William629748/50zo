@@ -4,8 +4,9 @@ import com.cincuentazo.controller.WelcomeViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle; // <-- AÑADE ESTE IMPORT
+import javafx.stage.StageStyle;
 import java.io.IOException;
 
 /**
@@ -34,10 +35,8 @@ public class WelcomeStage {
         this.primaryStage = primaryStage;
         this.welcomeStage = new Stage();
 
-        // ==================== LÍNEA AÑADIDA ====================
         // This line removes all native window decorations (title bar, close/minimize buttons).
         this.welcomeStage.initStyle(StageStyle.UNDECORATED);
-        // ========================================================
 
         setupUI(); // Calls the method to load FXML and set up the scene.
     }
@@ -70,8 +69,18 @@ public class WelcomeStage {
 
             // Configure the stage properties.
             welcomeStage.setScene(scene);
-            // welcomeStage.setTitle("Cincuentazo - Welcome"); // <-- This line is no longer needed with UNDECORATED style.
             welcomeStage.setResizable(false); // Prevent resizing of the welcome window.
+
+            // Add Icon
+            try {
+                Image icon = new Image(
+                        getClass().getResourceAsStream("/com.cincuentazo.images/favicon.png")
+                );
+                welcomeStage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.err.println("Could not load application icon: " + e.getMessage());
+            }
+            // ============================================================
 
             // Set a custom handler for when the window close request occurs (e.g., from an internal exit button).
             welcomeStage.setOnCloseRequest(e -> {
@@ -109,7 +118,6 @@ public class WelcomeStage {
 
         Scene scene = new Scene(root); // Create a new scene for the fallback UI.
         welcomeStage.setScene(scene);
-        // welcomeStage.setTitle("Error - Cincuentazo"); // <-- This line is no longer needed with UNDECORATED style.
     }
 
     /**
