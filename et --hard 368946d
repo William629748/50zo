@@ -1,0 +1,17 @@
+[33m368946d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mFinal-Version[m[33m, [m[1;31morigin/Final-Version[m[33m)[m Saving progress to final version
+[33m19c39b6[m[33m ([m[1;31morigin/will[m[33m, [m[1;32mfeature/menu-ui[m[33m)[m Complete table
+[33m9948b36[m Card images
+[33m5efd85b[m Multiple players
+[33m9c423d8[m[33m ([m[1;33mtag: [m[1;33mv1.0[m[33m)[m Final Touches of the code
+[33m85d3108[m[33m ([m[1;33mtag: [m[1;33mv0.9.3[m[33m)[m Tests,Deck, GameMode
+[33m6e2134d[m Deck, GameModel, 2 errors on game controller, CardTest, and incomplete Decktest and PlayerTest
+[33m96e997a[m[33m ([m[1;33mtag: [m[1;33mv0.9.1[m[33m, [m[1;31morigin/feature/menu-ui[m[33m)[m feat: new progress on Welcomestage and Gamestage.
+[33m40e624c[m Merge tag 'refs/tags/review-will-1' into feature/menu-ui
+[33mb0aba3c[m My updates to WelcomeView and styles
+[33m6167290[m[33m ([m[1;33mtag: [m[1;33mreview-will-1[m[33m)[m Interfaces
+[33m26051eb[m Added MainMenu FXML and button styles
+[33m21be286[m[33m ([m[1;32mMain[m[33m)[m Merge remote-tracking branch 'origin/will' into Main
+[33m1ad23c7[m New directory to save images
+[33m2deb14c[m first excepcion versions
+[33m407f12c[m[33m ([m[1;31morigin/Main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Project structure and base classes
+[33m582f167[m First commit: Structure
