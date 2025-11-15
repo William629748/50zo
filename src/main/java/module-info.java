@@ -2,7 +2,11 @@ module com.cincuentazo {
     requires javafx.controls;
     requires javafx.fxml;
 
+    requires javafx.media;
 
-    opens com.cincuentazo to javafx.fxml;
+
+    opens com.cincuentazo.controller to javafx.fxml;
     exports com.cincuentazo;
+
+
 }
