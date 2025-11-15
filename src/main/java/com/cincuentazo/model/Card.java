@@ -139,8 +139,8 @@ public class Card {
     public int calculateValue(int currentSum) {
         if (rank == Rank.ACE) {
             // Choose 1 or 10 based on what doesn't exceed 50
-            if (currentSum + 10 <= 50) {
-                return 10;
+            if (currentSum + 11 <= 50) {
+                return 11;
             }
             return 1;
         }
